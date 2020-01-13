@@ -1,4 +1,4 @@
-const initialIssues = [
+{/*const initialIssues = [
   {
     id: 1, status:'New', owner:'Ravan', effort:5, 
     created: new Date('2018-08-15'), due: undefined,
@@ -12,10 +12,16 @@ const initialIssues = [
   }
 ];
 
-{/*const sampleIssue = {
+const sampleIssue = {
   status: 'New', owner: 'Pieta',
   title: 'Completion data should be optional',
 };*/}
+const dateRegex = new RegExp('^\\d\\d\\d\\d-\\d\\d-\\d\\d');
+
+function jsonDateReviver (key, value) {
+    if(dateRegex.test(value)) return new Date(value);
+    return value;
+}
 
 class BorderWrap extends React.Component {
   render() {
@@ -44,7 +50,9 @@ function IssueRow(props) {
         <td>{issue.status}</td>
         <td>{issue.owner}</td>
         <td>{issue.created.toDateString()}</td>
+       {/* <td>{issue.created}</td>*/}
         <td>{issue.effort}</td>
+        {/*<td>{issue.due}</td>*/}
         <td>{issue.due ? issue.due.toDateString() : ''}</td>
         <td>{issue.title}</td>
       </tr>
@@ -98,7 +106,8 @@ class IssueAdd extends React.Component {
     const issue = {
       owner: form.owner.value,
       title: form.title.value,
-      status: 'New',
+  //    status: 'New',
+      due: new Date(new Date().getTime() + 1000*60*60*24*10),
     }
     this.props.createIssue(issue);
     form.owner.value="";
@@ -129,18 +138,51 @@ class IssueList extends React.Component {
     this.loadData();
   }
 
-  loadData() {
-    setTimeout(() => {
-      this.setState({issues: initialIssues});
-    }, 500);
+  async loadData() {
+ //   setTimeout(() => {
+ //     this.setState({issues: initialIssues});
+  //  }, 500);
+  const query = `query {
+    issueList {
+        id title status owner 
+        created effort due
+    }
+  }`;
+
+  const response = await fetch('/graphql', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ query })
+  });
+
+ // const result = await response.json();
+  const body = await response.text();
+  const result = JSON.parse(body, jsonDateReviver);
+  this.setState({ issues: result.data.issueList });
   }
   
-  createIssue(issue) {
-    issue.id = this.state.issues.length + 1;
-    issue.created = new Date();
-    const newIssueList = this.state.issues.slice();
-    newIssueList.push(issue);
-    this.setState({issues: newIssueList});
+  async createIssue(issue) {
+//    issue.id = this.state.issues.length + 1;
+//    issue.created = new Date();
+//    const newIssueList = this.state.issues.slice();
+//    newIssueList.push(issue);
+//    this.setState({issues: newIssueList});
+    const query = `mutation {
+      issueAdd(issue: {
+        title: "${issue.title}",
+        owner: "${issue.owner}",
+        due: "${issue.due.toISOString()}",
+      }) {
+        id
+      }
+    }`;
+
+    const response = await fetch('/graphql', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json'},
+      body: JSON.stringify({ query })
+    });
+    this.loadData();
   }
 
   render() {
