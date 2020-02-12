@@ -1,3 +1,7 @@
+/* eslint "react/react-in-jsx-scope": "off" */
+/* globals React ReactDOM */
+/* eslint "react/jsx-no-undef": "off" */
+
 {/*const initialIssues = [
   {
     id: 1, status:'New', owner:'Ravan', effort:5, 
@@ -16,6 +20,10 @@ const sampleIssue = {
   status: 'New', owner: 'Pieta',
   title: 'Completion data should be optional',
 };*/}
+
+/* globals React ReactDOM PropTypes */
+
+
 const dateRegex = new RegExp('^\\d\\d\\d\\d-\\d\\d-\\d\\d');
 
 function jsonDateReviver (key, value) {
@@ -33,6 +41,8 @@ class BorderWrap extends React.Component {
     );
   }
 }
+
+// eslint-disable-next-line react/prefer-stateless-function
 
 class IssueFilter extends React.Component {
   render() {
@@ -124,6 +134,13 @@ class IssueAdd extends React.Component {
     );
   }
 }
+
+//nsuring that IssueAdd is passed a createIssue function. 
+//We’ll need to define an IssueAdd.propTypes object, with createIssue as a key and
+// PropTypes.func.isRequired as its type.
+IssueAdd.propTypes = {                  
+  createIssue: PropTypes.func.isRequired,                  
+};
 
 async function graphQLFetch (query, variables = {}) {
   try {

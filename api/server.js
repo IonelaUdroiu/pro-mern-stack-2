@@ -150,6 +150,9 @@
 
             //instantiate express app
             const app = express();
+            //make the application safe from malicious cross-site attack
+            const enableCors = (process.env.ENABLE_CORS || 'true') == 'true';                                  
+            console.log('CORS setting:', enableCors);
             //create middleware function to match the request URL with a directory specified by thre parametere
          //   const fileServerMiddleware = express.static('public');
             //mount the static middleware on the application to use it
