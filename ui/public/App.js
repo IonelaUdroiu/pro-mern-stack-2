@@ -1,12 +1,21 @@
-const continents = ['Africa', 'America', 'Asia', 'Australia', 'Europe'];
-const helloContinents = Array.from(continents, function (c) {
-  return `Hello ${c}!`;
-});
-const message = helloContinents.join(''); // const element = React.createElement('div',{title: 'Outer div'},
-//                   React.createElement('h1',null,'Hello World!')
-//                 );
+"use strict";
 
-const element = React.createElement("div", {
-  title: "Outer div"
-}, React.createElement("h1", null, message));
-ReactDOM.render(element, document.getElementById('content'));
+require("babel-polyfill");
+
+require("whatwg-fetch");
+
+var _react = _interopRequireDefault(require("react"));
+
+var _reactDom = _interopRequireDefault(require("react-dom"));
+
+//var _IssueList = _interopRequireDefault(require("./IssueList.jsx"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var element = _react.default.createElement(_IssueList.default, null);
+
+_reactDom.default.render(element, document.getElementById('contents'));
+
+if (module.hot) {
+  module.hot.accept();
+}
